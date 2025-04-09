@@ -41,7 +41,7 @@
             <el-button type="info" size="mini" @click="handleView(scope.row)">查看</el-button>
             <el-button type="primary" size="mini" @click="handleEdit(scope.row)">修改</el-button>
           </template>
-          
+
           <!-- 管理员用户显示查看、审批和删除按钮 -->
           <template v-if="isAdmin">
             <el-button type="info" size="mini" @click="handleView(scope.row)">查看</el-button>
@@ -365,11 +365,11 @@ export default {
         noticeNumber: "",
         idNumber: "",
         reportDate: null,
-        leaveRequest: 0,
+        leaveRequest: 3, // 默认为未请假
         enrollmentStatus: 0,
         fileName: "",
-        needLeave: 0,
-        leaveDate: 1
+        needLeave: 0, // 默认为不需要请假
+        leaveDate: 0  // 默认为0天
       };
     },
     // 查看学籍信息
@@ -391,7 +391,7 @@ export default {
         needLeave: row.needLeave,
         leaveDate: row.leaveDate
       };
-      
+
       // 如果用户不需要请假，则强制设置请假审批状态为未请假
       if (row.needLeave === 0) {
         this.approveForm.leaveRequest = 3; // 未请假
@@ -401,10 +401,10 @@ export default {
           this.approveForm.leaveRequest = 0;
         }
       }
-      
+
       // 打印当前approveForm的状态，方便调试
       console.log("审批表单状态:", this.approveForm);
-      
+
       this.approveDialogVisible = true;
     },
     // 提交审批
@@ -415,7 +415,7 @@ export default {
           if (this.approveForm.needLeave === 0) {
             this.approveForm.leaveRequest = 3;
           }
-          
+
           updateEnrollmentStatus(this.approveForm).then(() => {
             this.$message.success("审批成功");
             this.fetchEnrollments();
@@ -431,10 +431,15 @@ export default {
     handleSubmit() {
       this.$refs.enrollmentForm.validate(valid => {
         if (valid) {
+          // 确保不需要请假时，请假天数为0
+          if (this.enrollmentForm.needLeave === 0) {
+            this.enrollmentForm.leaveDate = 0;
+          }
+          
           if (this.isTemporary) {
             // 设置请假审批状态
             this.enrollmentForm.leaveRequest = this.enrollmentForm.needLeave === 1 ? 0 : 3;
-            
+
             // 临时用户根据是否有enrollmentId判断是新增还是修改
             const action = this.enrollmentForm.enrollmentId ? updateEnrollment : addEnrollment;
             action(this.enrollmentForm).then(() => {
@@ -486,7 +491,7 @@ export default {
         case 0: return 'info';    // 待审核
         case 1: return 'success'; // 批准
         case 2: return 'danger';  // 驳回
-        case 3: return 'warning'; // 未请假
+        case 3: return 'success'; // 未请假
         default: return 'info';
       }
     },
@@ -503,11 +508,19 @@ export default {
     handleEdit(row) {
       this.openEnrollmentDialog('edit', row);
     },
-    
+
     // 处理是否需要请假选项变化
     handleNeedLeaveChange(value) {
       // 根据是否需要请假自动设置请假审批状态
       this.enrollmentForm.leaveRequest = value === 1 ? 0 : 3;
+      
+      // 当选择不需要请假时，将请假天数设置为0
+      if (value === 0) {
+        this.enrollmentForm.leaveDate = 0;
+      } else if (this.enrollmentForm.leaveDate === 0) {
+        // 如果选择需要请假，但请假天数为0，设置为默认值1
+        this.enrollmentForm.leaveDate = 1;
+      }
     }
   }
 };
