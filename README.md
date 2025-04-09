@@ -1,5 +1,5 @@
 
-# SRS（Study room management system的缩写）
+# CSRM（College Student Registration Management的缩写）
 
 ## 内置功能
 
