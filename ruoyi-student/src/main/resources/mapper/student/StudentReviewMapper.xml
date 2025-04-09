@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.StudentReviewMapper">
+
+    <resultMap id="StudentReviewResult" type="StudentReview">
+        <id property="reviewId" column="review_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="reviewDate" column="review_date"/>
+        <result property="documentValid" column="document_valid"/>
+        <result property="identityMatch" column="identity_match"/>
+        <result property="physicalStatus" column="physical_status"/>
+        <result property="finalResult" column="final_result"/>
+    </resultMap>
+
+    <!-- 获取所有复查记录 -->
+    <select id="getAllReviews" resultMap="StudentReviewResult">
+        SELECT * FROM student_review
+    </select>
+
+    <!-- 根据ID获取复查记录 -->
+    <select id="getReviewById" parameterType="Long" resultMap="StudentReviewResult">
+        SELECT * FROM student_review WHERE review_id = #{reviewId}
+    </select>
+
+    <!-- 根据用户ID获取复查记录 -->
+    <select id="getReviewByUserId" parameterType="Long" resultMap="StudentReviewResult">
+        SELECT * FROM student_review WHERE user_id = #{userId} LIMIT 1
+    </select>
+
+    <!-- 添加复查记录 -->
+    <insert id="addReview" parameterType="StudentReview">
+        INSERT INTO student_review (
+            user_id, review_date, document_valid, identity_match, physical_status, final_result
+        ) VALUES (
+                     #{userId}, #{reviewDate}, #{documentValid}, #{identityMatch}, #{physicalStatus}, #{finalResult}
+                 )
+    </insert>
+
+    <!-- 更新复查记录 -->
+    <update id="updateReview" parameterType="StudentReview">
+        UPDATE student_review SET
+                                  review_date = #{reviewDate},
+                                  document_valid = #{documentValid},
+                                  identity_match = #{identityMatch},
+                                  physical_status = #{physicalStatus},
+                                  final_result = #{finalResult}
+        WHERE review_id = #{reviewId}
+    </update>
+
+    <!-- 删除复查记录 -->
+    <delete id="deleteReview" parameterType="Long">
+        DELETE FROM student_review WHERE review_id = #{reviewId}
+    </delete>
+
+</mapper>
