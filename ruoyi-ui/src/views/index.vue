@@ -51,16 +51,16 @@
             </el-table>
           </el-card>
         </el-col>
-        <!-- 场馆场地数量 -->
+
         <el-col :span="12">
           <el-card style="margin-right: 20px; height: 420px;">
             <h3 slot="header">系统简介</h3>
-            <p>欢迎使用 自习室管理系统 🎉！本系统旨在提供便捷、高效的自习室预约与管理服务，帮助用户轻松查找、预订和管理自习室座位。<br/><br/>
-              ✨ <b>主要功能：</b><br/>
-              ✅ <b>在线预约：</b> 随时随地预订座位，支持日期与时间选择<br/>
-              ✅ <b>座位管理：</b> 查看实时座位使用情况，支持取消或调整预约<br/>
-              ✅ <b>规则管理：</b> 设定预约规则，避免资源浪费，提升使用效率<br/><br/>
-              本系统采用 <b>Spring Boot + Vue.js</b> 开发，确保高效、稳定的服务体验。立即开始，享受更智能的自习室管理！📚🚀</p>
+<!--            <p>欢迎使用 自习室管理系统 🎉！本系统旨在提供便捷、高效的自习室预约与管理服务，帮助用户轻松查找、预订和管理自习室座位。<br/><br/>-->
+<!--              ✨ <b>主要功能：</b><br/>-->
+<!--              ✅ <b>在线预约：</b> 随时随地预订座位，支持日期与时间选择<br/>-->
+<!--              ✅ <b>座位管理：</b> 查看实时座位使用情况，支持取消或调整预约<br/>-->
+<!--              ✅ <b>规则管理：</b> 设定预约规则，避免资源浪费，提升使用效率<br/><br/>-->
+<!--              本系统采用 <b>Spring Boot + Vue.js</b> 开发，确保高效、稳定的服务体验。立即开始，享受更智能的自习室管理！📚🚀</p>-->
           </el-card>
         </el-col>
       </el-row>
@@ -74,7 +74,6 @@
 </template>
 <script>
 import {listNotice, getNotice} from "@/api/system/notice";
-import {getVenueCourtCountMap} from "@/api/featherball/court";
 import * as echarts from 'echarts'
 
 
@@ -164,7 +163,7 @@ export default {
               left: 'center',
               top: 'center',
               style: {
-                text: '自习室预约管理系统',
+                text: '本科生学籍管理系统',
                 fontSize: 80,
                 fontWeight: 'bold',
                 lineDash: [0, 200],

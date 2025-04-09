@@ -63,10 +63,6 @@
 
         <dependency>
             <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-featherball</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-study</artifactId>
             <version>3.8.7</version>
             <scope>compile</scope>
