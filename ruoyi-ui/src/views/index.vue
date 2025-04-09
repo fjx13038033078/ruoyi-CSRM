@@ -1,41 +1,45 @@
 <template>
-  <div>
-    <div ref="echartsText" style="height: 100px; display: flex; justify-content: center; align-items: center;">
-      <!-- 这里 ECharts 动画文本会被渲染 -->
+  <div class="home-container">
+    <div class="gradient-title">
+      欢迎使用本科生学籍管理系统
     </div>
-    <div>
-      <el-carousel :interval="4000" type="card" height="300px">
-        <el-carousel-item>
-          <a href="https://www.baidu.com" target="_blank">
-            <img src="../assets/images/01.jpg" alt="Image 1" style="width: 100%;">
-          </a>
-        </el-carousel-item>
-        <el-carousel-item>
-          <a href="https://www.jd.com" target="_blank">
-            <img src="../assets/images/02.jpg" alt="Image 2" style="width: 100%;">
-          </a>
-        </el-carousel-item>
-        <el-carousel-item>
-          <a href="https://www.taobao.com" target="_blank">
-            <img src="../assets/images/03.jpg" alt="Image 3" style="width: 100%;">
+    
+    <!-- 轮播图区域 -->
+    <div class="carousel-container">
+      <el-carousel :interval="4000" type="card" height="320px" indicator-position="outside">
+        <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
+          <a :href="item.link" target="_blank">
+            <img :src="item.image" :alt="item.alt" class="carousel-image">
+            <div class="carousel-caption">{{item.caption}}</div>
           </a>
         </el-carousel-item>
       </el-carousel>
-      <!-- 通知公告 -->
-      <el-row style="margin-top: 20px;">
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content-container">
+      <el-row :gutter="20">
+        <!-- 通知公告卡片 -->
         <el-col :span="12">
-          <el-card style="margin-right: 20px; height: 420px;">
-            <h3 slot="header">通知公告</h3>
-            <el-table v-loading="loading" :data="noticeList" @selection-change="handleSelectionChange">
-              <el-table-column label="序号" align="center" prop="noticeId" width="100"/>
+          <el-card class="notice-card" shadow="hover">
+            <div slot="header" class="card-header">
+              <span><i class="el-icon-bell"></i> 通知公告</span>
+              <el-button style="float: right; padding: 3px 0" type="text">更多 <i class="el-icon-arrow-right"></i></el-button>
+            </div>
+            <el-table
+              v-loading="loading"
+              :data="noticeList"
+              @selection-change="handleSelectionChange"
+              :header-cell-style="{background:'#f5f7fa',color:'#606266'}"
+              style="width: 100%">
+              <el-table-column label="序号" align="center" prop="noticeId" width="80"/>
               <el-table-column
                 label="公告标题"
                 align="center"
                 prop="noticeTitle"
-                :show-overflow-tooltip="true"
-              >
+                :show-overflow-tooltip="true">
                 <template slot-scope="scope">
-                  <span @click="showNoticeContent(scope.row)">{{ scope.row.noticeTitle }}</span>
+                  <el-link type="primary" @click="showNoticeContent(scope.row)">{{ scope.row.noticeTitle }}</el-link>
                 </template>
               </el-table-column>
               <el-table-column label="公告类型" align="center" prop="noticeType" width="100">
@@ -52,30 +56,59 @@
           </el-card>
         </el-col>
 
+        <!-- 系统简介卡片 -->
         <el-col :span="12">
-          <el-card style="margin-right: 20px; height: 420px;">
-            <h3 slot="header">系统简介</h3>
-<!--            <p>欢迎使用 自习室管理系统 🎉！本系统旨在提供便捷、高效的自习室预约与管理服务，帮助用户轻松查找、预订和管理自习室座位。<br/><br/>-->
-<!--              ✨ <b>主要功能：</b><br/>-->
-<!--              ✅ <b>在线预约：</b> 随时随地预订座位，支持日期与时间选择<br/>-->
-<!--              ✅ <b>座位管理：</b> 查看实时座位使用情况，支持取消或调整预约<br/>-->
-<!--              ✅ <b>规则管理：</b> 设定预约规则，避免资源浪费，提升使用效率<br/><br/>-->
-<!--              本系统采用 <b>Spring Boot + Vue.js</b> 开发，确保高效、稳定的服务体验。立即开始，享受更智能的自习室管理！📚🚀</p>-->
+          <el-card class="info-card" shadow="hover">
+            <div slot="header" class="card-header">
+              <span><i class="el-icon-info"></i> 系统简介</span>
+            </div>
+            <div class="system-intro">
+              <p>欢迎使用<strong>本科生学籍管理系统</strong>！本系统旨在提供便捷、高效的学籍管理服务，帮助学生和管理人员轻松处理学籍相关事务。</p>
+              <div class="feature-list">
+                <div class="feature-item">
+                  <i class="el-icon-check"></i>
+                  <span>学籍信息管理：全面记录学生基本信息和学籍状态</span>
+                </div>
+                <div class="feature-item">
+                  <i class="el-icon-check"></i>
+                  <span>注册报到：便捷的在线注册流程，减少纸质办理</span>
+                </div>
+                <div class="feature-item">
+                  <i class="el-icon-check"></i>
+                  <span>请假审批：一体化的请假流程，提高审批效率</span>
+                </div>
+                <div class="feature-item">
+                  <i class="el-icon-check"></i>
+                  <span>学籍变动：规范化处理休学、复学、退学等变动事项</span>
+                </div>
+              </div>
+              <p class="system-footer">本系统采用 <strong>Spring Boot + Vue.js</strong> 开发，确保高效、稳定的服务体验。</p>
+            </div>
           </el-card>
         </el-col>
       </el-row>
-      <!-- 弹出的公告内容卡片 -->
-      <el-dialog :title="selectedNotice.title" :visible.sync="showNoticeDialog" width="780px" append-to-body>
-        <div slot="title" style="text-align: center;">{{ selectedNotice.title }}</div>
-        <div v-html="selectedNotice.content" class="notice-content"></div>
-      </el-dialog>
     </div>
+      
+    <!-- 通知公告弹窗 -->
+    <el-dialog 
+      :title="selectedNotice.title" 
+      :visible.sync="showNoticeDialog" 
+      width="780px" 
+      center
+      append-to-body>
+      <div slot="title" class="dialog-title">
+        <i class="el-icon-document"></i> {{selectedNotice.title}}
+      </div>
+      <div v-html="selectedNotice.content" class="notice-content"></div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="showNoticeDialog = false">我知道了</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
+
 <script>
 import {listNotice, getNotice} from "@/api/system/notice";
-import * as echarts from 'echarts'
-
 
 export default {
   name: "Notice",
@@ -123,14 +156,32 @@ export default {
         noticeType: [
           {required: true, message: "公告类型不能为空", trigger: "change"}
         ]
-      }
+      },
+      // 轮播图数据
+      carouselItems: [
+        {
+          image: require("@/assets/images/01.jpg"),
+          alt: "校园风景",
+          link: "https://www.baidu.com",
+          caption: "美丽校园"
+        },
+        {
+          image: require("@/assets/images/02.jpg"),
+          alt: "学生活动",
+          link: "https://www.jd.com",
+          caption: "丰富多彩的校园活动"
+        },
+        {
+          image: require("@/assets/images/03.jpg"),
+          alt: "教学楼",
+          link: "https://www.taobao.com",
+          caption: "现代化教学环境"
+        }
+      ]
     };
   },
   created() {
     this.getList();
-  },
-  mounted() {
-    this.initEchartsText(); // 初始化 ECharts 动画文本
   },
   methods: {
     /** 查询公告列表 */
@@ -151,69 +202,131 @@ export default {
         this.loading = false;
       });
     },
-    // 初始化 ECharts 动画文本
-    initEchartsText() {
-      const chartDom = this.$refs.echartsText;
-      const myChart = echarts.init(chartDom);
-      const option = {
-        graphic: {
-          elements: [
-            {
-              type: 'text',
-              left: 'center',
-              top: 'center',
-              style: {
-                text: '本科生学籍管理系统',
-                fontSize: 80,
-                fontWeight: 'bold',
-                lineDash: [0, 200],
-                lineDashOffset: 0,
-                fill: 'transparent',
-                stroke: '#000',
-                lineWidth: 1
-              },
-              keyframeAnimation: {
-                duration: 3000,
-                loop: true,
-                keyframes: [
-                  {
-                    percent: 0.7,
-                    style: {
-                      fill: 'transparent',
-                      lineDashOffset: 200,
-                      lineDash: [200, 0]
-                    }
-                  },
-                  {
-                    percent: 0.8,
-                    style: {
-                      fill: 'transparent'
-                    }
-                  },
-                  {
-                    percent: 1,
-                    style: {
-                      fill: 'black'
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      };
-      myChart.setOption(option);
+    // 处理复选框选中事件
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.noticeId);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     }
   },
 };
 </script>
 
 <style scoped lang="scss">
-.notice-content::v-deep img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
+.home-container {
+  padding: 0 20px 20px;
 }
 
+.gradient-title {
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  font-size: 50px;
+  font-weight: bold;
+  font-family: 'Microsoft YaHei', sans-serif;
+  background-image: linear-gradient(to right, #42b983, #409EFF, #2d3e8b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  letter-spacing: 2px;
+}
+
+.carousel-container {
+  margin-bottom: 30px;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.content-container {
+  margin-top: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.notice-card, .info-card {
+  height: 450px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.system-intro {
+  padding: 10px;
+  line-height: 1.8;
+}
+
+.feature-list {
+  margin: 20px 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  
+  i {
+    color: #42b983;
+    margin-right: 10px;
+    font-size: 18px;
+  }
+  
+  span {
+    flex: 1;
+  }
+}
+
+.system-footer {
+  margin-top: 20px;
+  text-align: center;
+  color: #909399;
+  font-style: italic;
+}
+
+.dialog-title {
+  text-align: center;
+  font-weight: bold;
+}
+
+.notice-content::v-deep {
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  padding: 15px;
+  line-height: 1.8;
+}
+
+.dialog-footer {
+  text-align: center;
+}
 </style>

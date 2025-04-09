@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.StudentEnrollmentMapper">
+
+    <resultMap id="StudentEnrollmentResult" type="StudentEnrollment">
+        <id property="enrollmentId" column="enrollment_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="noticeNumber" column="notice_number"/>
+        <result property="idNumber" column="id_number"/>
+        <result property="reportDate" column="report_date"/>
+        <result property="leaveRequest" column="leave_request"/>
+        <result property="enrollmentStatus" column="enrollment_status"/>
+        <result property="fileName" column="file_name"/>
+    </resultMap>
+
+    <!-- 获取所有新生登记 -->
+    <select id="getAllEnrollments" resultMap="StudentEnrollmentResult">
+        SELECT * FROM student_enrollment
+    </select>
+
+    <!-- 根据ID查询登记 -->
+    <select id="getEnrollmentById" parameterType="Long" resultMap="StudentEnrollmentResult">
+        SELECT * FROM student_enrollment WHERE enrollment_id = #{enrollmentId}
+    </select>
+
+    <select id="getEnrollmentByUserId" parameterType="Long" resultMap="StudentEnrollmentResult">
+        SELECT * FROM student_enrollment WHERE user_id = #{userId} limit 1
+    </select>
+
+    <!-- 添加登记 -->
+    <insert id="addEnrollment" parameterType="StudentEnrollment">
+        INSERT INTO student_enrollment (
+            user_id, notice_number, id_number, report_date, leave_request, enrollment_status, file_name
+        ) VALUES (
+                     #{userId}, #{noticeNumber}, #{idNumber}, #{reportDate}, #{leaveRequest}, #{enrollmentStatus}, #{fileName}
+                 )
+    </insert>
+
+    <!-- 登记审批 -->
+    <update id="updateEnrollmentStatus" parameterType="StudentEnrollment">
+        UPDATE student_enrollment SET
+                                      leave_request = #{leaveRequest},
+                                      enrollment_status = #{enrollmentStatus}
+        WHERE enrollment_id = #{enrollmentId}
+    </update>
+
+    <!-- 更新登记 -->
+    <update id="updateEnrollment" parameterType="StudentEnrollment">
+        UPDATE student_enrollment SET
+                                      notice_number = #{noticeNumber},
+                                      id_number = #{idNumber},
+                                      file_name = #{fileName}
+        WHERE enrollment_id = #{enrollmentId}
+    </update>
+
+    <!-- 删除登记 -->
+    <delete id="deleteEnrollment" parameterType="Long">
+        DELETE FROM student_enrollment WHERE enrollment_id = #{enrollmentId}
+    </delete>
+
+</mapper>

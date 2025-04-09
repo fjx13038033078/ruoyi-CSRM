@@ -201,6 +201,7 @@
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
         <module>ruoyi-study</module>
+        <module>ruoyi-student</module>
     </modules>
     <packaging>pom</packaging>
 
