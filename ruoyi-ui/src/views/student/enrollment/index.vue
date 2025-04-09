@@ -5,6 +5,14 @@
       <el-table-column label="学籍ID" prop="enrollmentId" align="center" width="120"></el-table-column>
       <el-table-column label="姓名" prop="userName" align="center" width="120"></el-table-column>
       <el-table-column label="录取通知书编号" prop="noticeNumber" align="center"></el-table-column>
+      <el-table-column label="是否请假" align="center">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.needLeave === 1 ? 'warning' : 'info'">
+            {{ scope.row.needLeave === 1 ? '需要请假' : '不需请假' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="请假时间(天)" prop="leaveDate" align="center"></el-table-column>
       <el-table-column label="报到时间" align="center">
         <template slot-scope="scope">
           {{ formatDate(scope.row.reportDate) }}
@@ -62,6 +70,15 @@
         <!-- 临时用户需要填写身份证号 -->
         <el-form-item v-if="isTemporary" label="身份证号" prop="idNumber">
           <el-input v-model="enrollmentForm.idNumber" placeholder="请输入18位身份证号码"></el-input>
+        </el-form-item>
+        <el-form-item label="是否需要请假" prop="needLeave">
+          <el-radio-group v-model="enrollmentForm.needLeave" @change="handleNeedLeaveChange">
+            <el-radio :label="0">否</el-radio>
+            <el-radio :label="1">是</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="请假时间(天)" prop="leaveDate" v-if="enrollmentForm.needLeave === 1">
+          <el-input-number v-model="enrollmentForm.leaveDate" :min="1" :max="30" style="width: 100%;"></el-input-number>
         </el-form-item>
         <!-- 管理员才需要填写这些字段 -->
         <template v-if="isAdmin">
@@ -122,6 +139,12 @@
         <el-form-item label="身份证号">
           <el-input v-model="viewEnrollmentForm.idNumber" disabled></el-input>
         </el-form-item>
+        <el-form-item label="是否需要请假">
+          <el-input v-model="viewEnrollmentForm.needLeaveText" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="请假时间(天)" v-if="viewEnrollmentForm.needLeave === 1">
+          <el-input v-model="viewEnrollmentForm.leaveDate" disabled></el-input>
+        </el-form-item>
         <el-form-item label="报到时间">
           <el-input v-model="viewEnrollmentForm.reportDate" disabled></el-input>
         </el-form-item>
@@ -143,10 +166,18 @@
     <!-- 审批对话框 -->
     <el-dialog :visible.sync="approveDialogVisible" title="学籍注册审批" width="40%">
       <el-form :model="approveForm" :rules="approveRules" ref="approveForm" label-width="120px">
+        <el-form-item label="是否需要请假">
+          <el-tag :type="approveForm.needLeave === 1 ? 'warning' : 'info'">
+            {{ approveForm.needLeave === 1 ? '需要请假' : '不需请假' }}
+          </el-tag>
+        </el-form-item>
+        <el-form-item v-if="approveForm.needLeave === 1" label="请假天数">
+          <el-input v-model="approveForm.leaveDate" disabled></el-input>
+        </el-form-item>
         <el-form-item label="请假审批状态" prop="leaveRequest">
-          <el-select v-model="approveForm.leaveRequest" style="width: 100%;">
+          <el-select v-model="approveForm.leaveRequest" style="width: 100%;" :disabled="approveForm.needLeave === 0">
             <el-option
-              v-for="item in leaveRequestOptions"
+              v-for="item in getLeaveRequestOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -211,7 +242,9 @@ export default {
         reportDate: null,
         leaveRequest: 0,
         enrollmentStatus: 0,
-        fileName: ""
+        fileName: "",
+        needLeave: 0,
+        leaveDate: 1
       },
       // 查看表单数据
       viewEnrollmentForm: {},
@@ -219,7 +252,9 @@ export default {
       approveForm: {
         enrollmentId: null,
         leaveRequest: 0,
-        enrollmentStatus: 0
+        enrollmentStatus: 0,
+        needLeave: 0,
+        leaveDate: 0
       },
       // 表单校验规则
       rules: {
@@ -228,6 +263,8 @@ export default {
           { required: true, message: "请输入身份证号", trigger: "blur" },
           { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: "请输入正确的身份证号格式", trigger: "blur" }
         ],
+        needLeave: [{ required: true, message: "请选择是否需要请假", trigger: "change" }],
+        leaveDate: [{ required: true, message: "请输入请假天数", trigger: "change" }],
         reportDate: [{ required: true, message: "请选择报到时间", trigger: "change" }],
         leaveRequest: [{ required: true, message: "请选择请假审批状态", trigger: "change" }],
         enrollmentStatus: [{ required: true, message: "请选择报到状态", trigger: "change" }]
@@ -252,6 +289,24 @@ export default {
         { value: 3, label: '放弃资格' }
       ]
     };
+  },
+  computed: {
+    // 根据是否需要请假返回不同的审批选项
+    getLeaveRequestOptions() {
+      if (this.approveForm.needLeave === 1) {
+        // 需要请假，显示批准、驳回和待审核选项
+        return [
+          { value: 0, label: '待审核' },
+          { value: 1, label: '批准' },
+          { value: 2, label: '驳回' }
+        ];
+      } else {
+        // 不需要请假，只显示未请假选项
+        return [
+          { value: 3, label: '未请假' }
+        ];
+      }
+    }
   },
   created() {
     this.getInfo();
@@ -312,7 +367,9 @@ export default {
         reportDate: null,
         leaveRequest: 0,
         enrollmentStatus: 0,
-        fileName: ""
+        fileName: "",
+        needLeave: 0,
+        leaveDate: 1
       };
     },
     // 查看学籍信息
@@ -320,7 +377,8 @@ export default {
       this.viewEnrollmentForm = {
         ...row,
         leaveRequestText: this.leaveRequestOptions.find(item => item.value === row.leaveRequest)?.label || '未知',
-        enrollmentStatusText: this.enrollmentStatusOptions.find(item => item.value === row.enrollmentStatus)?.label || '未知'
+        enrollmentStatusText: this.enrollmentStatusOptions.find(item => item.value === row.enrollmentStatus)?.label || '未知',
+        needLeaveText: row.needLeave === 1 ? '需要请假' : '不需请假'
       };
       this.viewDialogVisible = true;
     },
@@ -329,14 +387,35 @@ export default {
       this.approveForm = {
         enrollmentId: row.enrollmentId,
         leaveRequest: row.leaveRequest,
-        enrollmentStatus: row.enrollmentStatus
+        enrollmentStatus: row.enrollmentStatus,
+        needLeave: row.needLeave,
+        leaveDate: row.leaveDate
       };
+      
+      // 如果用户不需要请假，则强制设置请假审批状态为未请假
+      if (row.needLeave === 0) {
+        this.approveForm.leaveRequest = 3; // 未请假
+      } else {
+        // 如果用户需要请假，但状态是未请假，则改为待审核
+        if (this.approveForm.leaveRequest === 3) {
+          this.approveForm.leaveRequest = 0;
+        }
+      }
+      
+      // 打印当前approveForm的状态，方便调试
+      console.log("审批表单状态:", this.approveForm);
+      
       this.approveDialogVisible = true;
     },
     // 提交审批
     submitApprove() {
       this.$refs.approveForm.validate(valid => {
         if (valid) {
+          // 如果用户不需要请假，强制确保请假审批状态为未请假
+          if (this.approveForm.needLeave === 0) {
+            this.approveForm.leaveRequest = 3;
+          }
+          
           updateEnrollmentStatus(this.approveForm).then(() => {
             this.$message.success("审批成功");
             this.fetchEnrollments();
@@ -353,9 +432,24 @@ export default {
       this.$refs.enrollmentForm.validate(valid => {
         if (valid) {
           if (this.isTemporary) {
-            // 临时用户只能修改登记信息
-            updateEnrollment(this.enrollmentForm).then(() => {
-              this.$message.success("修改成功");
+            // 设置请假审批状态
+            this.enrollmentForm.leaveRequest = this.enrollmentForm.needLeave === 1 ? 0 : 3;
+            
+            // 临时用户根据是否有enrollmentId判断是新增还是修改
+            const action = this.enrollmentForm.enrollmentId ? updateEnrollment : addEnrollment;
+            action(this.enrollmentForm).then(() => {
+              this.$message.success(this.enrollmentForm.enrollmentId ? "修改成功" : "添加成功");
+              this.fetchEnrollments();
+              this.dialogVisible = false;
+            }).catch(error => {
+              console.error("保存学籍注册失败", error);
+              this.$message.error("保存失败");
+            });
+          } else if (this.isAdmin) {
+            // 管理员提交表单
+            const action = this.enrollmentForm.enrollmentId ? updateEnrollment : addEnrollment;
+            action(this.enrollmentForm).then(() => {
+              this.$message.success(this.enrollmentForm.enrollmentId ? "修改成功" : "添加成功");
               this.fetchEnrollments();
               this.dialogVisible = false;
             }).catch(error => {
@@ -408,6 +502,12 @@ export default {
     // 处理修改操作
     handleEdit(row) {
       this.openEnrollmentDialog('edit', row);
+    },
+    
+    // 处理是否需要请假选项变化
+    handleNeedLeaveChange(value) {
+      // 根据是否需要请假自动设置请假审批状态
+      this.enrollmentForm.leaveRequest = value === 1 ? 0 : 3;
     }
   }
 };

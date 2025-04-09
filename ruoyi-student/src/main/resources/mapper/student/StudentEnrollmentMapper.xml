@@ -13,6 +13,8 @@
         <result property="leaveRequest" column="leave_request"/>
         <result property="enrollmentStatus" column="enrollment_status"/>
         <result property="fileName" column="file_name"/>
+        <result property="needLeave" column="need_leave"/>
+        <result property="leaveDate" column="leave_date"/>
     </resultMap>
 
     <!-- 获取所有新生登记 -->
@@ -32,9 +34,9 @@
     <!-- 添加登记 -->
     <insert id="addEnrollment" parameterType="StudentEnrollment">
         INSERT INTO student_enrollment (
-            user_id, notice_number, id_number, report_date, leave_request, enrollment_status, file_name
+            user_id, notice_number, id_number, report_date, leave_request, enrollment_status, file_name, need_leave, leave_date
         ) VALUES (
-                     #{userId}, #{noticeNumber}, #{idNumber}, #{reportDate}, #{leaveRequest}, #{enrollmentStatus}, #{fileName}
+                     #{userId}, #{noticeNumber}, #{idNumber}, #{reportDate}, #{leaveRequest}, #{enrollmentStatus}, #{fileName}, #{needLeave}, #{leaveDate}
                  )
     </insert>
 
@@ -51,7 +53,9 @@
         UPDATE student_enrollment SET
                                       notice_number = #{noticeNumber},
                                       id_number = #{idNumber},
-                                      file_name = #{fileName}
+                                      file_name = #{fileName},
+                                      need_leave = #{needLeave},
+                                      leave_date = #{leaveDate}
         WHERE enrollment_id = #{enrollmentId}
     </update>
 

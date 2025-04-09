@@ -46,7 +46,7 @@ public class StudentEnrollmentController extends BaseController {
         return toAjax(enrollmentService.addEnrollment(enrollment));
     }
 
-    @GetMapping("/updateStatus")
+    @PostMapping("/updateStatus")
     public AjaxResult updateStatus(@RequestBody StudentEnrollment enrollment) {
         return toAjax(enrollmentService.updateEnrollmentStatus(enrollment));
     }

@@ -69,6 +69,16 @@ public class StudentEnrollment implements Serializable {
      */
     private String fileName;
 
+    /**
+     * 是否需要请假（0=否，1=是）
+     */
+    private Integer needLeave;
+
+    /**
+     * 请假时间（单位：天）
+     */
+    private Integer leaveDate;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
