@@ -1,20 +1,24 @@
 <template>
   <div class="home-container">
-    <div class="gradient-title">
-      欢迎使用本科生学籍管理系统
-    </div>
+    <el-card class="title-card" shadow="hover">
+      <div class="gradient-title">
+        欢迎使用本科生学籍管理系统
+      </div>
+    </el-card>
     
     <!-- 轮播图区域 -->
-    <div class="carousel-container">
-      <el-carousel :interval="4000" type="card" height="320px" indicator-position="outside">
-        <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
-          <a :href="item.link" target="_blank">
-            <img :src="item.image" :alt="item.alt" class="carousel-image">
-            <div class="carousel-caption">{{item.caption}}</div>
-          </a>
-        </el-carousel-item>
-      </el-carousel>
-    </div>
+    <el-card class="carousel-card" shadow="hover">
+      <div class="carousel-container">
+        <el-carousel :interval="4000" type="card" height="320px" indicator-position="outside">
+          <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
+            <a :href="item.link" target="_blank">
+              <img :src="item.image" :alt="item.alt" class="carousel-image">
+              <div class="carousel-caption">{{item.caption}}</div>
+            </a>
+          </el-carousel-item>
+        </el-carousel>
+      </div>
+    </el-card>
     
     <!-- 内容区域 -->
     <div class="content-container">
@@ -217,12 +221,18 @@ export default {
   padding: 0 20px 20px;
 }
 
+.title-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  background-image: linear-gradient(to right, rgba(66, 185, 131, 0.1), rgba(64, 158, 255, 0.1), rgba(45, 62, 139, 0.1));
+}
+
 .gradient-title {
   height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px 0;
   font-size: 50px;
   font-weight: bold;
   font-family: 'Microsoft YaHei', sans-serif;
@@ -234,8 +244,14 @@ export default {
   letter-spacing: 2px;
 }
 
+.carousel-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
 .carousel-container {
-  margin-bottom: 30px;
+  margin: 10px 0;
 }
 
 .carousel-image {
