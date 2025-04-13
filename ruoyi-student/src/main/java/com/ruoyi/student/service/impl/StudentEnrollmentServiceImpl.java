@@ -57,7 +57,7 @@ public class StudentEnrollmentServiceImpl implements StudentEnrollmentService {
     public boolean addEnrollment(StudentEnrollment enrollment) {
         Long userId = SecurityUtils.getUserId();
         enrollment.setUserId(userId);
-        enrollment.setEnrollmentStatus(1);
+        enrollment.setEnrollmentStatus(0);
 //        enrollment.setLeaveRequest(3);
         enrollment.setReportDate(LocalDate.now());
         return enrollmentMapper.addEnrollment(enrollment) > 0;

@@ -1,5 +1,5 @@
 <script>
-import { listStudentReviews, getStudentReview, addStudentReview, updateStudentReview, deleteStudentReview } from "@/api/student/review";
+import { listStudentReviews, getStudentReview, updateStudentReview, deleteStudentReview } from "@/api/student/review";
 
 export default {
   name: "StudentReview",
@@ -7,12 +7,6 @@ export default {
     return {
       // 遮罩层
       loading: false,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
       // 总条数
       total: 0,
       // 复查信息表格数据
@@ -42,13 +36,6 @@ export default {
       detailForm: {},
       // 表单校验
       rules: {
-        userId: [
-          { required: true, message: "学生ID不能为空", trigger: "blur" },
-          { type: "number", message: "学生ID必须为数字", trigger: "blur" }
-        ],
-        reviewDate: [
-          { required: true, message: "复查时间不能为空", trigger: "change" }
-        ],
         documentValid: [
           { required: true, message: "请选择材料是否合规", trigger: "change" }
         ],
@@ -101,22 +88,10 @@ export default {
       };
       this.resetForm("form");
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.reviewId);
-      this.single = selection.length !== 1;
-      this.multiple = !selection.length;
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加入学复查信息";
-    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const reviewId = row.reviewId || this.ids[0];
+      const reviewId = row.reviewId;
       getStudentReview(reviewId).then(response => {
         this.form = response.data;
         this.open = true;
@@ -125,7 +100,7 @@ export default {
     },
     /** 查看详情按钮操作 */
     handleDetail(row) {
-      const reviewId = row.reviewId || this.ids[0];
+      const reviewId = row.reviewId;
       getStudentReview(reviewId).then(response => {
         const data = response.data;
         this.detailForm = {
@@ -148,25 +123,9 @@ export default {
               this.open = false;
               this.getList();
             });
-          } else {
-            addStudentReview(this.form).then(response => {
-              this.$message.success("新增成功");
-              this.open = false;
-              this.getList();
-            });
           }
         }
       });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const reviewIds = row.reviewId || this.ids;
-      this.$confirm('是否确认删除复查信息编号为"' + reviewIds + '"的数据项?').then(function() {
-        return deleteStudentReview(reviewIds);
-      }).then(() => {
-        this.getList();
-        this.$message.success("删除成功");
-      }).catch(() => {});
     },
     // 获取复查结论标签类型
     getFinalResultType(status) {
@@ -176,6 +135,15 @@ export default {
         case 2: return 'danger';  // 不合格
         default: return 'info';
       }
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      this.$confirm('是否确认删除该复查信息?').then(function() {
+        return deleteStudentReview(row.reviewId);
+      }).then(() => {
+        this.getList();
+        this.$message.success("删除成功");
+      }).catch(() => {});
     }
   }
 };
@@ -183,18 +151,10 @@ export default {
 
 <template>
   <div class="app-container">
-    <!-- 操作按钮 -->
-    <el-row :gutter="20" class="mb-20">
-      <el-col>
-        <el-button type="primary" @click="handleAdd" v-hasPermi="['student:review:add']">新增复查</el-button>
-      </el-col>
-    </el-row>
-
     <!-- 数据表格 -->
-    <el-table v-loading="loading" :data="reviewList" @selection-change="handleSelectionChange" border style="width: 100%">
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table v-loading="loading" :data="reviewList" border style="width: 100%">
       <el-table-column label="复查ID" align="center" prop="reviewId" width="120" />
-      <el-table-column label="学生姓名" align="center" prop="userName" width="120" />
+      <el-table-column label="学生姓名" align="center" prop="userName" width="140" />
       <el-table-column label="复查时间" align="center" prop="reviewDate" />
       <el-table-column label="材料是否合规" align="center">
         <template slot-scope="scope">
@@ -220,7 +180,7 @@ export default {
       <el-table-column label="复查结论" align="center">
         <template slot-scope="scope">
           <el-tag :type="getFinalResultType(scope.row.finalResult)">
-            {{ scope.row.finalResult === 0 ? '未复查' : 
+            {{ scope.row.finalResult === 0 ? '未复查' :
               scope.row.finalResult === 1 ? '合格' : '不合格' }}
           </el-tag>
         </template>
@@ -233,7 +193,6 @@ export default {
         </template>
       </el-table-column>
     </el-table>
-    
     <!-- 分页组件 -->
     <pagination
       v-show="total > 0"

@@ -34,7 +34,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="270px">
+      <el-table-column label="操作" align="center" width="370px">
         <template slot-scope="scope">
           <!-- 临时用户显示查看和修改按钮 -->
           <template v-if="isTemporary">
@@ -45,6 +45,12 @@
           <!-- 管理员用户显示查看、审批和删除按钮 -->
           <template v-if="isAdmin">
             <el-button type="info" size="mini" @click="handleView(scope.row)">查看</el-button>
+            <el-button 
+              type="warning" 
+              size="mini" 
+              @click="handleReview(scope.row)" 
+              v-hasPermi="['student:review:add']"
+              v-if="scope.row.enrollmentStatus === 1">入学复查</el-button>
             <el-button type="primary" size="mini" @click="handleApprove(scope.row)" v-hasPermi="['student:enrollment:edit']">审批</el-button>
             <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-hasPermi="['student:enrollment:delete']">删除</el-button>
           </template>
@@ -200,11 +206,50 @@
         <el-button type="primary" @click="submitApprove">确定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 入学复查对话框 -->
+    <el-dialog :visible.sync="reviewDialogVisible" title="入学复查" width="40%">
+      <el-form ref="reviewForm" :model="reviewForm" :rules="reviewRules" label-width="120px">
+        <el-form-item label="材料是否合规" prop="documentValid">
+          <el-radio-group v-model="reviewForm.documentValid">
+            <el-radio :label="1">合规</el-radio>
+            <el-radio :label="0">不合规</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="身份是否匹配" prop="identityMatch">
+          <el-radio-group v-model="reviewForm.identityMatch">
+            <el-radio :label="1">匹配</el-radio>
+            <el-radio :label="0">不匹配</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="体检是否合格" prop="physicalStatus">
+          <el-radio-group v-model="reviewForm.physicalStatus">
+            <el-radio :label="1">合格</el-radio>
+            <el-radio :label="0">不合格</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="复查结论" prop="finalResult">
+          <el-select v-model="reviewForm.finalResult" placeholder="请选择复查结论" style="width: 100%;">
+            <el-option
+              v-for="dict in reviewResultOptions"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="reviewDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitReview">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { listEnrollments, getEnrollment, addEnrollment, updateEnrollment, deleteEnrollment, updateEnrollmentStatus } from "@/api/student/enrollment";
+import { addStudentReview } from "@/api/student/review";
 import { getInfo } from "@/api/login";
 
 export default {
@@ -226,6 +271,7 @@ export default {
       dialogVisible: false,
       viewDialogVisible: false,
       approveDialogVisible: false,
+      reviewDialogVisible: false,
       dialogTitle: "",
       dialogButtonText: "",
       // 用户角色权限
@@ -256,6 +302,15 @@ export default {
         needLeave: 0,
         leaveDate: 0
       },
+      // 入学复查表单数据
+      reviewForm: {
+        userId: null,
+        documentValid: 1,
+        identityMatch: 1,
+        physicalStatus: 1,
+        finalResult: 1,
+        reviewDate: null
+      },
       // 表单校验规则
       rules: {
         noticeNumber: [{ required: true, message: "请输入录取通知书编号", trigger: "blur" }],
@@ -274,6 +329,13 @@ export default {
         leaveRequest: [{ required: true, message: "请选择请假审批状态", trigger: "change" }],
         enrollmentStatus: [{ required: true, message: "请选择报到状态", trigger: "change" }]
       },
+      // 入学复查表单校验规则
+      reviewRules: {
+        documentValid: [{ required: true, message: "请选择材料是否合规", trigger: "change" }],
+        identityMatch: [{ required: true, message: "请选择身份是否匹配", trigger: "change" }],
+        physicalStatus: [{ required: true, message: "请选择体检是否合格", trigger: "change" }],
+        finalResult: [{ required: true, message: "请选择复查结论", trigger: "change" }]
+      },
       // 请假状态选项
       leaveRequestOptions: [
         { value: 0, label: '待审核' },
@@ -287,6 +349,11 @@ export default {
         { value: 1, label: '已报到' },
         { value: 2, label: '逾期未报到' },
         { value: 3, label: '放弃资格' }
+      ],
+      // 入学复查结果选项
+      reviewResultOptions: [
+        { value: 1, label: '合格' },
+        { value: 0, label: '不合格' }
       ]
     };
   },
@@ -435,7 +502,7 @@ export default {
           if (this.enrollmentForm.needLeave === 0) {
             this.enrollmentForm.leaveDate = 0;
           }
-          
+
           if (this.isTemporary) {
             // 设置请假审批状态
             this.enrollmentForm.leaveRequest = this.enrollmentForm.needLeave === 1 ? 0 : 3;
@@ -513,7 +580,7 @@ export default {
     handleNeedLeaveChange(value) {
       // 根据是否需要请假自动设置请假审批状态
       this.enrollmentForm.leaveRequest = value === 1 ? 0 : 3;
-      
+
       // 当选择不需要请假时，将请假天数设置为0
       if (value === 0) {
         this.enrollmentForm.leaveDate = 0;
@@ -521,6 +588,41 @@ export default {
         // 如果选择需要请假，但请假天数为0，设置为默认值1
         this.enrollmentForm.leaveDate = 1;
       }
+    },
+
+    // 打开入学复查对话框
+    openReviewDialog(row) {
+      this.reviewForm = {
+        userId: row.userId,
+        documentValid: 1,
+        identityMatch: 1,
+        physicalStatus: 1,
+        finalResult: 1,
+        reviewDate: new Date().toISOString().substr(0, 10) // 设置为当前日期
+      };
+      this.currentRow = row; // 保存当前操作的行
+      this.reviewDialogVisible = true;
+    },
+
+    // 提交入学复查
+    submitReview() {
+      this.$refs.reviewForm.validate(valid => {
+        if (valid) {
+          // 调用添加复查记录API
+          addStudentReview(this.reviewForm).then(response => {
+            this.$message.success("入学复查提交成功");
+            this.reviewDialogVisible = false;
+          }).catch(error => {
+            console.error("入学复查提交失败", error);
+            this.$message.error("提交失败");
+          });
+        }
+      });
+    },
+
+    // 处理入学复查
+    handleReview(row) {
+      this.openReviewDialog(row);
     }
   }
 };

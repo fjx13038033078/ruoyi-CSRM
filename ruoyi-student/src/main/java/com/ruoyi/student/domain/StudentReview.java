@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -34,8 +35,21 @@ public class StudentReview implements Serializable {
     private Long userId;
 
     /**
+     * 用户名
+     */
+    @TableField(exist = false)
+    private String userName;
+
+    /**
+     * 姓名
+     */
+    @TableField(exist = false)
+    private String nickName;
+
+    /**
      * 复查时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate reviewDate;
 
     /**
