@@ -23,6 +23,16 @@
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
+      <el-form-item prop="role">
+        <el-select placeholder="请选择角色" style="width: 100%" value="student">
+          <template slot="prefix">
+            <svg-icon icon-class="peoples" class="el-input__icon input-icon" />
+          </template>
+          <el-option label="管理员" value="admin" />
+          <el-option label="老师" value="teacher" />
+          <el-option label="学生" value="student" />
+        </el-select>
+      </el-form-item>
       <el-form-item prop="code" v-if="captchaEnabled">
         <el-input
           v-model="loginForm.code"
@@ -72,8 +82,8 @@ export default {
     return {
       codeUrl: "",
       loginForm: {
-        username: "admin",
-        password: "admin123",
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: ""
