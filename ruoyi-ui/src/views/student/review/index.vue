@@ -154,7 +154,7 @@ export default {
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="reviewList" border style="width: 100%">
       <el-table-column label="复查ID" align="center" prop="reviewId" width="120" />
-      <el-table-column label="学生姓名" align="center" prop="userName" width="140" />
+      <el-table-column label="学生姓名" align="center" prop="nickName" width="140" />
       <el-table-column label="复查时间" align="center" prop="reviewDate" />
       <el-table-column label="材料是否合规" align="center">
         <template slot-scope="scope">
@@ -258,11 +258,11 @@ export default {
         <el-form-item label="复查ID">
           <el-input v-model="detailForm.reviewId" disabled></el-input>
         </el-form-item>
-        <el-form-item label="学生ID">
-          <el-input v-model="detailForm.userId" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="学生姓名">
+        <el-form-item label="学号">
           <el-input v-model="detailForm.userName" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="姓名">
+          <el-input v-model="detailForm.nickName" disabled></el-input>
         </el-form-item>
         <el-form-item label="复查时间">
           <el-input v-model="detailForm.reviewDate" disabled></el-input>

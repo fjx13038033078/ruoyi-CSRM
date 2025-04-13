@@ -49,7 +49,9 @@ public class StudentReviewServiceImpl implements StudentReviewService {
 
     @Override
     public StudentReview getStudentReviewById(Long reviewId) {
-        return studentReviewMapper.getReviewById(reviewId);
+        StudentReview reviewById = studentReviewMapper.getReviewById(reviewId);
+        fillReview(reviewById);
+        return reviewById;
     }
 
     @Override
@@ -76,5 +78,13 @@ public class StudentReviewServiceImpl implements StudentReviewService {
             String userName = iSysUserService.selectUserById(userId).getUserName()== null ? "" : iSysUserService.selectUserById(userId).getUserName();
             studentReview.setUserName(userName);
         }
+    }
+
+    private void fillReview(StudentReview studentReview) {
+        Long userId = studentReview.getUserId();
+        String nickName = iSysUserService.selectUserById(userId).getNickName()== null ? "" : iSysUserService.selectUserById(userId).getNickName();
+        studentReview.setNickName(nickName);
+        String userName = iSysUserService.selectUserById(userId).getUserName()== null ? "" : iSysUserService.selectUserById(userId).getUserName();
+        studentReview.setUserName(userName);
     }
 }
