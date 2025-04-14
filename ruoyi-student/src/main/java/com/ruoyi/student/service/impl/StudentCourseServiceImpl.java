@@ -5,7 +5,6 @@ import com.ruoyi.student.domain.StudentCourse;
 import com.ruoyi.student.mapper.StudentCourseMapper;
 import com.ruoyi.student.service.StudentCourseService;
 import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
