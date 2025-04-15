@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.StudentMajorTransferMapper">
+
+    <resultMap id="StudentMajorTransferResult" type="StudentMajorTransfer">
+        <id property="transferId" column="transfer_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="fromMajor" column="from_major"/>
+        <result property="toMajor" column="to_major"/>
+        <result property="reason" column="reason"/>
+        <result property="applyDate" column="apply_date"/>
+        <result property="approvalStatus" column="approval_status"/>
+        <result property="newNum" column="new_num"/>
+        <result property="oldNum" column="old_num"/>
+    </resultMap>
+
+    <!-- 获取所有转专业申请 -->
+    <select id="getAllTransfers" resultMap="StudentMajorTransferResult">
+        SELECT * FROM student_major_transfer
+    </select>
+
+    <!-- 根据ID获取转专业申请 -->
+    <select id="getTransferById" parameterType="Long" resultMap="StudentMajorTransferResult">
+        SELECT * FROM student_major_transfer WHERE transfer_id = #{transferId}
+    </select>
+
+    <!-- 根据用户ID获取转专业申请 -->
+    <select id="getTransferByUserId" parameterType="Long" resultMap="StudentMajorTransferResult">
+        SELECT * FROM student_major_transfer WHERE user_id = #{userId}
+    </select>
+
+    <!-- 添加转专业申请 -->
+    <insert id="addTransfer" parameterType="StudentMajorTransfer">
+        INSERT INTO student_major_transfer (user_id, from_major, to_major, reason, apply_date, approval_status, new_num, old_num)
+        VALUES (#{userId}, #{fromMajor}, #{toMajor}, #{reason}, #{applyDate}, #{approvalStatus}, #{newNum}, #{oldNum})
+    </insert>
+
+    <!-- 更新转专业申请 -->
+    <update id="updateTransfer" parameterType="StudentMajorTransfer">
+        UPDATE student_major_transfer
+        SET user_id = #{userId},
+            from_major = #{fromMajor},
+            to_major = #{toMajor},
+            reason = #{reason},
+            apply_date = #{applyDate},
+            approval_status = #{approvalStatus},
+            new_num = #{newNum},
+            old_num = #{oldNum}
+        WHERE transfer_id = #{transferId}
+    </update>
+
+    <!-- 根据ID分配新学号（仅更新new_num字段） -->
+    <update id="assignNewStudentNum" parameterType="StudentMajorTransfer">
+        UPDATE student_major_transfer
+        SET new_num = #{newNum}
+        WHERE transfer_id = #{transferId}
+    </update>
+
+    <!-- 根据ID更新审批状态（仅修改approval_status字段） -->
+    <update id="updateApprovalStatus" parameterType="StudentMajorTransfer">
+        UPDATE student_major_transfer
+        SET approval_status = #{approvalStatus},
+            old_num = #{oldNum}
+        WHERE transfer_id = #{transferId}
+    </update>
+
+    <!-- 删除转专业申请 -->
+    <delete id="deleteTransfer" parameterType="Long">
+        DELETE FROM student_major_transfer WHERE transfer_id = #{transferId}
+    </delete>
+
+</mapper>
