@@ -1,6 +1,7 @@
 <script>
 import { listStudentCourses, getStudentCourse, addStudentCourse, updateStudentCourse, deleteStudentCourse } from "@/api/student/course";
 import { listTrainer } from "@/api/system/user";
+import { addSelection } from "@/api/student/selection";
 
 export default {
   name: "StudentCourse",
@@ -157,6 +158,24 @@ export default {
         this.getList();
         this.$message.success("删除成功");
       }).catch(() => {});
+    },
+    /** 选课按钮操作 */
+    handleSelection(row) {
+      this.$confirm('确认选择课程"' + row.courseName + '"?', "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        const selectionData = {
+          courseId: row.courseId
+        };
+        addSelection(selectionData).then(() => {
+          this.$message.success("选课成功");
+        }).catch(error => {
+          console.error("选课失败", error);
+          this.$message.error("选课失败，可能已经选过此课程");
+        });
+      }).catch(() => {});
     }
   }
 };
@@ -181,11 +200,12 @@ export default {
         </template>
       </el-table-column>
       <el-table-column label="学期" align="center" prop="semester" width="140" />
-      <el-table-column label="操作" align="center" width="270px">
+      <el-table-column label="操作" align="center" width="340px">
         <template slot-scope="scope">
           <el-button type="info" size="mini" @click="handleDetail(scope.row)">查看</el-button>
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-hasPermi="['student:course:edit']">修改</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-hasPermi="['student:course:delete']">删除</el-button>
+          <el-button type="success" size="mini" @click="handleSelection(scope.row)" v-hasPermi="['student:course:select']">选课</el-button>
         </template>
       </el-table-column>
     </el-table>

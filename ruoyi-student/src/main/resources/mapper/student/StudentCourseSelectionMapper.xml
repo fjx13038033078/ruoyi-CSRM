@@ -7,6 +7,7 @@
     <resultMap type="StudentCourseSelection" id="StudentCourseSelectionResult">
         <id property="selectionId" column="selection_id"/>
         <result property="userId" column="user_id"/>
+        <result property="teacherId" column="teacher_id"/>
         <result property="courseId" column="course_id"/>
         <result property="selectionDate" column="selection_date"/>
     </resultMap>
@@ -28,14 +29,15 @@
 
     <!-- 添加选课记录 -->
     <insert id="addSelection" parameterType="StudentCourseSelection">
-        INSERT INTO student_course_selection (user_id, course_id, selection_date)
-        VALUES (#{userId}, #{courseId}, #{selectionDate})
+        INSERT INTO student_course_selection (user_id, teacher_id, course_id, selection_date)
+        VALUES (#{userId}, #{teacherId}, #{courseId}, #{selectionDate})
     </insert>
 
     <!-- 更新选课记录 -->
     <update id="updateSelection" parameterType="StudentCourseSelection">
         UPDATE student_course_selection
         SET user_id = #{userId},
+            teacher_id = #{teacherId},
             course_id = #{courseId},
             selection_date = #{selectionDate}
         WHERE selection_id = #{selectionId}

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -52,6 +53,11 @@ public class StudentCourseSelectionServiceImpl implements StudentCourseSelection
 
     @Override
     public boolean addSelection(StudentCourseSelection selection) {
+        Long userId = SecurityUtils.getUserId();
+        selection.setUserId(userId);
+        selection.setSelectionDate(LocalDate.now());
+        Long courseId = selection.getCourseId();
+        selection.setTeacherId(studentCourseService.getCourseById(courseId).getUserId());
         return selectionMapper.addSelection(selection) > 0;
     }
 
@@ -75,6 +81,8 @@ public class StudentCourseSelectionServiceImpl implements StudentCourseSelection
             String userName = iSysUserService.selectUserById(userId).getNickName()== null ? "" : iSysUserService.selectUserById(userId).getNickName();
             selection.setUserName(userName);
             selection.setCourseName(studentCourseService.getCourseById(selection.getCourseId()).getCourseName());
+            Long teacherId = studentCourseService.getCourseById(selection.getCourseId()).getUserId();
+            selection.setTeacherName(iSysUserService.selectUserById(teacherId).getNickName()== null ? "" : iSysUserService.selectUserById(teacherId).getNickName());
         }
     }
 }

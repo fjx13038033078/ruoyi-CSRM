@@ -4,31 +4,29 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Date;
+import java.math.BigDecimal;
 
 /**
  * @Author 范佳兴
- * @date 2025/4/14 17:33
+ * @date 2025/4/15 10:22
  */
-@TableName("student_course_selection")
+@TableName("student_grade")
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class StudentCourseSelection implements Serializable {
+public class StudentGrade implements Serializable {
     /**
-     * 主键自增ID
+     * 主键ID
      */
     @TableId(type = IdType.AUTO)
-    private Long selectionId;
+    private Long gradeId;
 
     /**
      * 用户ID
@@ -36,38 +34,19 @@ public class StudentCourseSelection implements Serializable {
     private Long userId;
 
     /**
-     * 用户名
-     */
-    @TableField(exist = false)
-    private String userName;
-
-    /**
-     * 教师ID
-     */
-    private Long teacherId;
-
-    /**
-     * 教师名
-     */
-    @TableField(exist = false)
-    private String teacherName;
-
-    /**
      * 课程ID
      */
     private Long courseId;
 
     /**
-     * 课程名
+     * 成绩
      */
-    @TableField(exist = false)
-    private String courseName;
+    private BigDecimal grade;
 
     /**
-     * 选课时间
+     * 学期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate selectionDate;
+    private String semester;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

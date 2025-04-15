@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.StudentGradeMapper">
+
+    <!-- 成绩结果映射 -->
+    <resultMap type="StudentGrade" id="StudentGradeResult">
+        <id property="gradeId" column="grade_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="grade" column="grade"/>
+        <result property="semester" column="semester"/>
+    </resultMap>
+
+    <!-- 获取所有成绩记录 -->
+    <select id="getAllGrades" resultMap="StudentGradeResult">
+        SELECT * FROM student_grade
+    </select>
+
+    <!-- 根据成绩ID获取成绩信息 -->
+    <select id="getGradeById" parameterType="Long" resultMap="StudentGradeResult">
+        SELECT * FROM student_grade WHERE grade_id = #{gradeId}
+    </select>
+
+    <!-- 添加成绩记录 -->
+    <insert id="addGrade" parameterType="StudentGrade">
+        INSERT INTO student_grade (user_id, course_id, grade, semester)
+        VALUES (#{userId}, #{courseId}, #{grade}, #{semester})
+    </insert>
+
+    <!-- 更新成绩记录 -->
+    <update id="updateGrade" parameterType="StudentGrade">
+        UPDATE student_grade
+        SET user_id = #{userId},
+            course_id = #{courseId},
+            grade = #{grade},
+            semester = #{semester}
+        WHERE grade_id = #{gradeId}
+    </update>
+
+    <!-- 删除成绩记录 -->
+    <delete id="deleteGrade" parameterType="Long">
+        DELETE FROM student_grade WHERE grade_id = #{gradeId}
+    </delete>
+
+</mapper>
