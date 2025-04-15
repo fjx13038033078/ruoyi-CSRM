@@ -24,7 +24,7 @@
         SELECT * FROM student_course WHERE course_id = #{courseId}
     </select>
 
-    <select id="getCourseByUserId" parameterType="Long" resultMap="StudentCourseResult">
+    <select id="getCoursesByUserId" parameterType="Long" resultMap="StudentCourseResult">
         SELECT * FROM student_course WHERE user_id = #{userId}
     </select>
 

@@ -171,11 +171,8 @@ export default {
         };
         addSelection(selectionData).then(() => {
           this.$message.success("选课成功");
-        }).catch(error => {
-          console.error("选课失败", error);
-          this.$message.error("选课失败，可能已经选过此课程");
-        });
-      }).catch(() => {});
+        })
+      });
     }
   }
 };

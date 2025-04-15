@@ -34,9 +34,32 @@ public class StudentGrade implements Serializable {
     private Long userId;
 
     /**
+     * 用户名
+     */
+    @TableField(exist = false)
+    private String userName;
+
+    /**
      * 课程ID
      */
     private Long courseId;
+
+    /**
+     * 课程名称
+     */
+    @TableField(exist = false)
+    private String courseName;
+
+    /**
+     * 教师ID
+     */
+    private Long teacherId;
+
+    /**
+     * 教师名
+     */
+    @TableField(exist = false)
+    private String teacherName;
 
     /**
      * 成绩

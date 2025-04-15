@@ -27,6 +27,16 @@
         SELECT * FROM student_course_selection WHERE user_id = #{userId}
     </select>
 
+    <!-- 根据教师ID查询选课记录 -->
+    <select id="getSelectionByTeacherId" parameterType="Long" resultMap="StudentCourseSelectionResult">
+        SELECT * FROM student_course_selection WHERE teacher_id = #{teacherId}
+    </select>
+
+    <select id="selectByUserIdAndCourseId" resultMap="StudentCourseSelectionResult">
+        SELECT * FROM student_course_selection
+        WHERE user_id = #{userId} AND course_id = #{courseId}
+    </select>
+
     <!-- 添加选课记录 -->
     <insert id="addSelection" parameterType="StudentCourseSelection">
         INSERT INTO student_course_selection (user_id, teacher_id, course_id, selection_date)

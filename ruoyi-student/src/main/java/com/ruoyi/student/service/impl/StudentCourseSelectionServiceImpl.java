@@ -10,6 +10,7 @@ import com.ruoyi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,6 +40,12 @@ public class StudentCourseSelectionServiceImpl implements StudentCourseSelection
             List<StudentCourseSelection> allSelections = selectionMapper.getAllSelections();
             fillUserName(allSelections);
             return allSelections;
+        } else if (role.equalsIgnoreCase("teacher")) {
+            {
+                List<StudentCourseSelection> selectionByTeacherId = selectionMapper.getSelectionByTeacherId(userId);
+                fillUserName(selectionByTeacherId);
+                return selectionByTeacherId;
+            }
         } else {
             List<StudentCourseSelection> selectionByUserId = selectionMapper.getSelectionByUserId(userId);
             fillUserName(selectionByUserId);
@@ -52,11 +59,21 @@ public class StudentCourseSelectionServiceImpl implements StudentCourseSelection
     }
 
     @Override
+    @Transactional
     public boolean addSelection(StudentCourseSelection selection) {
         Long userId = SecurityUtils.getUserId();
+        Long courseId = selection.getCourseId();
+
+        // 检查是否已经选过该课程
+        List<StudentCourseSelection> studentCourseSelections = selectionMapper.selectByUserIdAndCourseId(userId, courseId);
+        log.info("existingSelection:{}", studentCourseSelections);
+        if (!studentCourseSelections.isEmpty()) {
+            throw new RuntimeException("您已经选过该课程，请勿重复选课");
+        }
+
+        // 未选过，继续添加
         selection.setUserId(userId);
         selection.setSelectionDate(LocalDate.now());
-        Long courseId = selection.getCourseId();
         selection.setTeacherId(studentCourseService.getCourseById(courseId).getUserId());
         return selectionMapper.addSelection(selection) > 0;
     }
@@ -73,16 +90,17 @@ public class StudentCourseSelectionServiceImpl implements StudentCourseSelection
 
     /**
      * 填充用户名
+     *
      * @param selections
      */
     private void fillUserName(List<StudentCourseSelection> selections) {
         for (StudentCourseSelection selection : selections) {
             Long userId = selection.getUserId();
-            String userName = iSysUserService.selectUserById(userId).getNickName()== null ? "" : iSysUserService.selectUserById(userId).getNickName();
+            String userName = iSysUserService.selectUserById(userId).getNickName() == null ? "" : iSysUserService.selectUserById(userId).getNickName();
             selection.setUserName(userName);
             selection.setCourseName(studentCourseService.getCourseById(selection.getCourseId()).getCourseName());
             Long teacherId = studentCourseService.getCourseById(selection.getCourseId()).getUserId();
-            selection.setTeacherName(iSysUserService.selectUserById(teacherId).getNickName()== null ? "" : iSysUserService.selectUserById(teacherId).getNickName());
+            selection.setTeacherName(iSysUserService.selectUserById(teacherId).getNickName() == null ? "" : iSysUserService.selectUserById(teacherId).getNickName());
         }
     }
 }

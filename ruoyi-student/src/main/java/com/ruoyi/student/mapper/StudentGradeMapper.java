@@ -25,6 +25,20 @@ public interface StudentGradeMapper {
     StudentGrade getGradeById(Long gradeId);
 
     /**
+     * 根据用户ID获取成绩列表
+     * @param userId 用户ID
+     * @return 成绩列表
+     */
+    List<StudentGrade> getGradesByUserId(Long userId);
+
+    /**
+     * 根据教师ID获取成绩列表
+     * @param userId 教师ID
+     * @return 成绩列表
+     */
+    List<StudentGrade> getGradesByTeacherId(Long userId);
+
+    /**
      * 添加成绩记录
      * @param studentGrade 成绩对象
      * @return 影响行数

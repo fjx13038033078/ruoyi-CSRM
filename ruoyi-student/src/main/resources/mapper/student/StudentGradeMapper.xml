@@ -8,6 +8,7 @@
     <resultMap type="StudentGrade" id="StudentGradeResult">
         <id property="gradeId" column="grade_id"/>
         <result property="userId" column="user_id"/>
+        <result property="teacherId" column="teacher_id"/>
         <result property="courseId" column="course_id"/>
         <result property="grade" column="grade"/>
         <result property="semester" column="semester"/>
@@ -23,10 +24,18 @@
         SELECT * FROM student_grade WHERE grade_id = #{gradeId}
     </select>
 
+    <select id="getGradesByUserId" parameterType="Long" resultMap="StudentGradeResult">
+        SELECT * FROM student_grade WHERE user_id = #{userId}
+    </select>
+
+    <select id="getGradesByTeacherId" parameterType="Long" resultMap="StudentGradeResult">
+        SELECT * FROM student_grade WHERE teacher_id = #{teacherId}
+    </select>
+
     <!-- 添加成绩记录 -->
     <insert id="addGrade" parameterType="StudentGrade">
-        INSERT INTO student_grade (user_id, course_id, grade, semester)
-        VALUES (#{userId}, #{courseId}, #{grade}, #{semester})
+        INSERT INTO student_grade (user_id, teacher_id, course_id, grade, semester)
+        VALUES (#{userId}, #{teacherId}, #{courseId}, #{grade}, #{semester})
     </insert>
 
     <!-- 更新成绩记录 -->
@@ -34,6 +43,7 @@
         UPDATE student_grade
         SET user_id = #{userId},
             course_id = #{courseId},
+            teacher_id = #{teacherId},
             grade = #{grade},
             semester = #{semester}
         WHERE grade_id = #{gradeId}

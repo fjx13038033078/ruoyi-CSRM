@@ -2,6 +2,7 @@ package com.ruoyi.student.mapper;
 
 import com.ruoyi.student.domain.StudentCourseSelection;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -33,6 +34,24 @@ public interface StudentCourseSelectionMapper {
      * @return 选课记录列表
      */
     List<StudentCourseSelection> getSelectionByUserId(Long userId);
+
+    /**
+     * 根据教师ID查询选课记录
+     *
+     * @param teacherId 课程ID
+     * @return 选课记录列表
+     */
+    List<StudentCourseSelection> getSelectionByTeacherId(Long teacherId);
+
+    /**
+     * 根据用户ID和课程ID查询选课记录
+     *
+     * @param userId   用户ID
+     * @param courseId 课程ID
+     * @return 选课记录
+     */
+    List<StudentCourseSelection> selectByUserIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
+
 
     /**
      * 添加选课记录
