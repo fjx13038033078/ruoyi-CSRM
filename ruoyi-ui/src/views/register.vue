@@ -3,7 +3,12 @@
     <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
       <h3 class="title">本科生学籍管理系统</h3>
       <el-form-item prop="username">
-        <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号(未注册学籍用户请使用身份证号)">
+        <el-input 
+          v-model="registerForm.username" 
+          type="text" 
+          auto-complete="off" 
+          autocomplete="off"
+          placeholder="请输入18位身份证号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -12,6 +17,7 @@
           v-model="registerForm.password"
           type="password"
           auto-complete="off"
+          autocomplete="new-password"
           placeholder="密码"
           @keyup.enter.native="handleRegister"
         >
@@ -23,6 +29,7 @@
           v-model="registerForm.confirmPassword"
           type="password"
           auto-complete="off"
+          autocomplete="new-password"
           placeholder="确认密码"
           @keyup.enter.native="handleRegister"
         >
@@ -90,8 +97,8 @@ export default {
       },
       registerRules: {
         username: [
-          { required: true, trigger: "blur", message: "请输入您的账号" },
-          { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
+          { required: true, trigger: "blur", message: "请输入您的身份证号" },
+          { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: "请输入正确的身份证号", trigger: "blur" }
         ],
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" },
@@ -109,8 +116,18 @@ export default {
   },
   created() {
     this.getCode();
+    this.resetForm();
   },
   methods: {
+    resetForm() {
+      this.registerForm = {
+        username: "",
+        password: "",
+        confirmPassword: "",
+        code: "",
+        uuid: ""
+      };
+    },
     getCode() {
       getCodeImg().then(res => {
         this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;
