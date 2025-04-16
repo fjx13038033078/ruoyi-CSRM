@@ -40,6 +40,9 @@ public class StudentMajorTransferServiceImpl implements StudentMajorTransferServ
             return allTransfers;
         } else {
             StudentMajorTransfer transferByUserId = transferMapper.getTransferByUserId(userId);
+            if (transferByUserId == null) {
+                return new ArrayList<>();
+            }
             fillUserInfo(transferByUserId);
             List<StudentMajorTransfer> transferByUserIds = new ArrayList<>();
             transferByUserIds.add(transferByUserId);

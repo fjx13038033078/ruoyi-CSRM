@@ -27,10 +27,10 @@ public class StudentCourseServiceImpl implements StudentCourseService {
     public List<StudentCourse> getAllCourses() {
         Long userId = SecurityUtils.getUserId();
         String role = iSysRoleService.selectStringRoleByUserId(userId);
-        if (role.equalsIgnoreCase("admin")) {
-            return studentCourseMapper.getAllCourses();
-        } else {
+        if (role.equalsIgnoreCase("teacher")) {
             return studentCourseMapper.getCoursesByUserId(userId);
+        } else {
+            return studentCourseMapper.getAllCourses();
         }
     }
 
