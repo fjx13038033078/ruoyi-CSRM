@@ -102,6 +102,14 @@ public interface SysUserMapper
     public int updateUserBalance(SysUser user);
 
     /**
+     * 修改用户名
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    public int updateUserName(SysUser user);
+
+    /**
      * 重置用户密码
      * 
      * @param userName 用户名

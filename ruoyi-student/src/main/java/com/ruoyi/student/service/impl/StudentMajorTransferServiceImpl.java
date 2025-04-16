@@ -1,5 +1,6 @@
 package com.ruoyi.student.service.impl;
 
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.student.domain.StudentMajorTransfer;
 import com.ruoyi.student.mapper.StudentMajorTransferMapper;
@@ -7,7 +8,10 @@ import com.ruoyi.student.service.StudentMajorTransferService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudentMajorTransferServiceImpl implements StudentMajorTransferService {
 
+    private static final Logger log = LoggerFactory.getLogger(StudentMajorTransferServiceImpl.class);
     private final StudentMajorTransferMapper transferMapper;
 
     private final ISysRoleService iSysRoleService;
@@ -87,7 +92,14 @@ public class StudentMajorTransferServiceImpl implements StudentMajorTransferServ
     }
 
     @Override
+    @Transactional
     public boolean assignNewStudentNum(StudentMajorTransfer transfer) {
+        Long userId = transfer.getUserId();
+        log.info("userId:{}", userId);
+        SysUser sysUser = iSysUserService.selectUserById(userId);
+        log.info("用户名：{}", sysUser.getUserName());
+        sysUser.setUserName(transfer.getNewNum());
+        iSysUserService.updateUserName(sysUser);
         return transferMapper.assignNewStudentNum(transfer) > 0;
     }
 
@@ -100,7 +112,7 @@ public class StudentMajorTransferServiceImpl implements StudentMajorTransferServ
     }
 
     private void fillUserInfo(StudentMajorTransfer transfer) {
-        Long userId = SecurityUtils.getUserId();
+        Long userId = transfer.getUserId();
         String userName = iSysUserService.selectUserById(userId).getNickName();
         transfer.setUserName(userName);
     }

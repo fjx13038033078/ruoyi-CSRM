@@ -142,7 +142,7 @@ export default {
       </el-table-column>
       <el-table-column label="操作" align="center" width="280px">
         <template slot-scope="scope">
-          <el-button type="danger" size="mini" @click="handleCancelSelection(scope.row)">取消选课</el-button>
+          <el-button type="danger" size="mini" @click="handleCancelSelection(scope.row)" v-hasPermi="['student:grade:cancel']">取消选课</el-button>
           <el-button type="primary" size="mini" @click="handleInputGrade(scope.row)" v-hasPermi="['student:grade:add']">录入成绩</el-button>
         </template>
       </el-table-column>

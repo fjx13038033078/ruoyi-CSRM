@@ -333,6 +333,11 @@ public class SysUserServiceImpl implements ISysUserService
         return userMapper.updateUser(user);
     }
 
+    @Override
+    public int updateUserName(SysUser user) {
+        return userMapper.updateUserName(user);
+    }
+
     /**
      * 用户授权角色
      * 

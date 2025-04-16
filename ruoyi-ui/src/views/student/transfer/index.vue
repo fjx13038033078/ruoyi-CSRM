@@ -166,6 +166,7 @@ export default {
     handleAssignNum(row) {
       this.currentRow = row;
       this.studentNumForm = {
+        userId: row.userId,
         transferId: row.transferId,
         newNum: null
       };
@@ -223,7 +224,7 @@ export default {
     <div class="mb-20">
       <el-button type="primary" @click="handleAdd" v-hasPermi="['student:transfer:add']">发起申请</el-button>
     </div>
-    
+
     <!-- 数据表格 -->
     <el-table v-loading="loading" :data="transferList" border style="width: 100%">
       <el-table-column label="申请ID" align="center" prop="transferId" width="80" />
@@ -238,7 +239,7 @@ export default {
       <el-table-column label="审批状态" align="center" width="100">
         <template slot-scope="scope">
           <el-tag :type="getApprovalStatusType(scope.row.approvalStatus)">
-            {{ scope.row.approvalStatus === 0 ? '待审批' : 
+            {{ scope.row.approvalStatus === 0 ? '待审批' :
                scope.row.approvalStatus === 1 ? '已批准' : '驳回' }}
           </el-tag>
         </template>
@@ -249,16 +250,16 @@ export default {
         <template slot-scope="scope">
           <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-hasPermi="['student:transfer:delete']">删除</el-button>
           <el-button type="primary" size="mini" @click="handleApproval(scope.row)" v-hasPermi="['student:transfer:approval']">审核</el-button>
-          <el-button 
-            type="success" 
-            size="mini" 
-            @click="handleAssignNum(scope.row)" 
+          <el-button
+            type="success"
+            size="mini"
+            @click="handleAssignNum(scope.row)"
             v-hasPermi="['student:transfer:assign']"
             v-if="scope.row.approvalStatus === 1 && !scope.row.newNum">设置学号</el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <!-- 分页组件 -->
     <pagination
       v-show="total > 0"
