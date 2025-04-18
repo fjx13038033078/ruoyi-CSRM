@@ -288,7 +288,7 @@
 <!--          </el-col>-->
           <el-col :span="12">
             <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
+              <el-select v-model="form.roleId" placeholder="请选择角色" @change="handleRoleChange">
                 <el-option
                   v-for="item in roleOptions"
                   :key="item.roleId"
@@ -536,7 +536,8 @@ export default {
         remark: undefined,
         balance:undefined,
         postIds: [],
-        roleIds: []
+        roleIds: [],
+        roleId: undefined
       };
       this.resetForm("form");
     },
@@ -581,6 +582,20 @@ export default {
         this.open = true;
         this.title = "添加用户";
         this.form.password = this.initPassword;
+        
+        // 默认选择学生角色
+        if (this.roleOptions && this.roleOptions.length > 0) {
+          // 找到学生角色
+          const studentRole = this.roleOptions.find(role => role.roleName === "学生" || role.roleKey === "student");
+          if (studentRole) {
+            this.form.roleId = studentRole.roleId;
+            this.form.roleIds = [studentRole.roleId];
+          } else {
+            // 如果没有找到学生角色，默认选择第一个角色
+            this.form.roleId = this.roleOptions[0].roleId;
+            this.form.roleIds = [this.roleOptions[0].roleId];
+          }
+        }
       });
     },
     /** 修改按钮操作 */
@@ -593,6 +608,10 @@ export default {
         this.roleOptions = response.roles;
         this.$set(this.form, "postIds", response.postIds);
         this.$set(this.form, "roleIds", response.roleIds);
+        // 如果有角色，则设置选中第一个角色
+        if (response.roleIds && response.roleIds.length > 0) {
+          this.form.roleId = response.roleIds[0];
+        }
         this.open = true;
         this.title = "修改用户";
         this.form.password = "";
@@ -678,6 +697,11 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
+    },
+    /** 角色选择变更处理 */
+    handleRoleChange(value) {
+      // 将选中的角色ID转换为数组格式
+      this.form.roleIds = value ? [value] : [];
     }
   }
 };

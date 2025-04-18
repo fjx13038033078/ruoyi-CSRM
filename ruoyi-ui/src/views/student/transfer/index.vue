@@ -19,6 +19,10 @@ export default {
       approvalOpen: false,
       // 是否显示新学号弹出层
       assignNumOpen: false,
+      // 是否为管理员
+      isAdmin: false,
+      // 用户角色
+      userRoles: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -80,9 +84,17 @@ export default {
     };
   },
   created() {
+    this.getInfo();
     this.getList();
   },
   methods: {
+    /** 获取当前用户信息 */
+    getInfo() {
+      this.$store.dispatch('GetInfo').then(res => {
+        this.isAdmin = res.roles.includes('admin');
+        this.userRoles = res.roles;
+      });
+    },
     /** 查询转专业信息列表 */
     getList() {
       this.loading = true;
@@ -221,7 +233,7 @@ export default {
 <template>
   <div class="app-container">
     <!-- 新增按钮 -->
-    <div class="mb-20">
+    <div class="mb-20" v-if="!isAdmin">
       <el-button type="primary" @click="handleAdd" v-hasPermi="['student:transfer:add']">发起申请</el-button>
     </div>
 
@@ -248,7 +260,12 @@ export default {
       <el-table-column label="新学号" align="center" prop="newNum" width="120" />
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-hasPermi="['student:transfer:delete']">删除</el-button>
+          <el-button 
+            type="danger" 
+            size="mini" 
+            @click="handleDelete(scope.row)" 
+            v-hasPermi="['student:transfer:delete']"
+            v-if="isAdmin || scope.row.approvalStatus !== 1">删除</el-button>
           <el-button type="primary" size="mini" @click="handleApproval(scope.row)" v-hasPermi="['student:transfer:approval']">审核</el-button>
           <el-button
             type="success"

@@ -85,7 +85,8 @@ public class StudentMajorTransferServiceImpl implements StudentMajorTransferServ
     @Override
     public boolean updateApprovalStatus(StudentMajorTransfer transfer) {
         if (transfer.getApprovalStatus() == 1) {
-            Long userId = SecurityUtils.getUserId();
+            transfer.getTransferId();
+            Long userId = transferMapper.getTransferById(transfer.getTransferId()).getUserId();
             transfer.setOldNum(iSysUserService.selectUserById(userId).getUserName());
         }
         return transferMapper.updateApprovalStatus(transfer) > 0;

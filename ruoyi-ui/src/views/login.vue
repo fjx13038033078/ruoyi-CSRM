@@ -24,7 +24,7 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="role">
-        <el-select placeholder="请选择角色" style="width: 100%" value="student">
+        <el-select v-model="loginForm.role" placeholder="请选择角色" style="width: 100%">
           <template slot="prefix">
             <svg-icon icon-class="peoples" class="el-input__icon input-icon" />
           </template>
@@ -86,7 +86,8 @@ export default {
         password: "",
         rememberMe: false,
         code: "",
-        uuid: ""
+        uuid: "",
+        role: "student"
       },
       loginRules: {
         username: [
@@ -134,7 +135,8 @@ export default {
       this.loginForm = {
         username: username === undefined ? this.loginForm.username : username,
         password: password === undefined ? this.loginForm.password : decrypt(password),
-        rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
+        rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+        role: this.loginForm.role
       };
     },
     handleLogin() {

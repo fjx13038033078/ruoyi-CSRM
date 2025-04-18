@@ -40,6 +40,8 @@ export default {
       detailForm: {},
       // 当前教师名称
       currentTrainerName: "",
+      // 是否为管理员
+      isAdmin: false,
       // 表单校验
       rules: {
         courseName: [
@@ -63,10 +65,17 @@ export default {
     };
   },
   created() {
+    this.getInfo();
     this.getList();
     this.getTrainerList();
   },
   methods: {
+    /** 获取当前用户信息 */
+    getInfo() {
+      this.$store.dispatch('GetInfo').then(res => {
+        this.isAdmin = res.roles.includes('admin');
+      });
+    },
     /** 查询课程信息列表 */
     getList() {
       this.loading = true;
@@ -202,7 +211,7 @@ export default {
           <el-button type="info" size="mini" @click="handleDetail(scope.row)">查看</el-button>
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)" v-hasPermi="['student:course:edit']">修改</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(scope.row)" v-hasPermi="['student:course:delete']">删除</el-button>
-          <el-button type="success" size="mini" @click="handleSelection(scope.row)" v-hasPermi="['student:course:select']">选课</el-button>
+          <el-button v-if="!isAdmin" type="success" size="mini" @click="handleSelection(scope.row)" v-hasPermi="['student:course:select']">选课</el-button>
         </template>
       </el-table-column>
     </el-table>
