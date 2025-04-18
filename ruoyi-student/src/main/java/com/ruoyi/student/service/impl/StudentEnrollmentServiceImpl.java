@@ -1,5 +1,6 @@
 package com.ruoyi.student.service.impl;
 
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.student.domain.StudentEnrollment;
 import com.ruoyi.student.mapper.StudentEnrollmentMapper;
@@ -9,6 +10,7 @@ import com.ruoyi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -54,12 +56,16 @@ public class StudentEnrollmentServiceImpl implements StudentEnrollmentService {
     }
 
     @Override
+    @Transactional
     public boolean addEnrollment(StudentEnrollment enrollment) {
         Long userId = SecurityUtils.getUserId();
         enrollment.setUserId(userId);
         enrollment.setEnrollmentStatus(0);
 //        enrollment.setLeaveRequest(3);
         enrollment.setReportDate(LocalDate.now());
+        SysUser sysUser = iSysUserService.selectUserById(userId);
+        sysUser.setidnumber(enrollment.getIdNumber());
+        iSysUserService.updateIDNumber(sysUser);
         return enrollmentMapper.addEnrollment(enrollment) > 0;
     }
 

@@ -376,6 +376,11 @@ public class SysUserServiceImpl implements ISysUserService
         return userMapper.updateUserBalance(user);
     }
 
+    @Override
+    public int updateIDNumber(SysUser user) {
+        return userMapper.updateIDNumber(user);
+    }
+
     /**
      * 修改用户基本信息
      * 

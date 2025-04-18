@@ -158,6 +158,8 @@ public interface ISysUserService
      */
     public int updateUserBalance(SysUser user);
 
+    public int updateIDNumber(SysUser user);
+
     /**
      * 修改用户基本信息
      * 

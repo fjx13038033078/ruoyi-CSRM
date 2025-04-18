@@ -131,6 +131,12 @@ public class SysUser extends BaseEntity {
      */
     private BigDecimal balance;
 
+    /*
+     * 身份证号
+     */
+    @Excel(name = "身份证号")
+    private String idnumber;
+
     public SysUser() {
 
     }
@@ -165,6 +171,14 @@ public class SysUser extends BaseEntity {
 
     public BigDecimal getBalance() {
         return balance;
+    }
+
+    public String getidnumber() {
+        return idnumber;
+    }
+
+    public void setidnumber(String idnumber) {
+        this.idnumber = idnumber;
     }
 
     public void setDeptId(Long deptId) {
@@ -330,6 +344,7 @@ public class SysUser extends BaseEntity {
                 .append("remark", getRemark())
                 .append("dept", getDept())
                 .append("balance", getBalance())
+                .append("idnumber", getidnumber())
                 .toString();
     }
 }

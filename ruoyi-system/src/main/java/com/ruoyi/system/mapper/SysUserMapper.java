@@ -101,6 +101,8 @@ public interface SysUserMapper
      */
     public int updateUserBalance(SysUser user);
 
+    public int updateIDNumber(SysUser user);
+
     /**
      * 修改用户名
      *

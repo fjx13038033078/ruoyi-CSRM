@@ -24,6 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"   column="update_time"  />
         <result property="remark"       column="remark"       />
 		<result property="balance"      column="balance"      />
+		<result property="idnumber"      column="ID_number"      />
         <association property="dept"    javaType="SysDept"         resultMap="deptResult" />
         <collection  property="roles"   javaType="java.util.List"  resultMap="RoleResult" />
     </resultMap>
@@ -48,7 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectUserVo">
-        select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, u.balance,
+        select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, u.balance,u.ID_number,
         d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.status as dept_status,
         r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
         from sys_user u
@@ -58,7 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
     
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
-		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, u.balance, d.dept_name, d.leader from sys_user u
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, u.balance,U.ID_number, d.dept_name, d.leader from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
 		where u.del_flag = '0'
 		<if test="userId != null and userId != 0">
@@ -224,6 +225,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="createBy != null and createBy != ''">create_by,</if>
  			<if test="remark != null and remark != ''">remark,</if>
 			<if test="balance != null and balance != ''">balance,</if>
+			<if test="idnumber != null and idnumber != ''">ID_number,</if>
  			create_time
  		)values(
  			<if test="userId != null and userId != ''">#{userId},</if>
@@ -239,6 +241,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="createBy != null and createBy != ''">#{createBy},</if>
  			<if test="remark != null and remark != ''">#{remark},</if>
 			<if test="balance != null and balance != ''">#{balance},</if>
+ 		    <if test="idnumber != null and idnumber != ''">#{idnumber},</if>
  			sysdate()
  		)
 	</insert>
@@ -260,6 +263,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
  			<if test="remark != null">remark = #{remark},</if>
 			<if test="balance != null">balance = #{balance},</if>
+			<if test="idnumber != null and idnumber != ''">ID_number = #{idnumber},</if>
  			update_time = sysdate()
  		</set>
  		where user_id = #{userId}
@@ -267,6 +271,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<update id="updateUserBalance" parameterType="SysUser">
 		update sys_user set balance = #{balance} where user_id = #{userId}
+	</update>
+
+	<update id="updateIDNumber" parameterType="SysUser">
+		update sys_user set ID_number = #{idnumber} where user_id = #{userId}
 	</update>
 
 	<update id="updateUserName" parameterType="SysUser">
